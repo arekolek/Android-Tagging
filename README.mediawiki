@@ -1,0 +1,4 @@
+Importing into Eclipse:
+
+1. File -> ImportÉ -> Existing project into Workspace
+2. Select root directory app/ then Finish.
