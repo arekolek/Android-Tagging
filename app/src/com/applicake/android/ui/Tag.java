@@ -39,6 +39,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,7 +57,7 @@ public class Tag extends Activity {
   ArrayList<String> mNewTags = new ArrayList<String>(
       Arrays.asList(new String[] { "elo" }));
   ArrayList<String> mSuggestedTags = new ArrayList<String>(Arrays.asList(new String[] {
-      "raz", "dwa", "trzy", "elo" }));
+      "raz", "dwa", "trzy", "elo" , "cztery", "pi´ç"}));
 
   TagListAdapter mAdapter;
 
@@ -99,18 +100,15 @@ public class Tag extends Activity {
 
     // add callback listeners
     mTagEditText.setOnKeyListener(new View.OnKeyListener() {
-
       public boolean onKey(View v, int keyCode, KeyEvent event) {
         switch (event.getKeyCode()) {
         case KeyEvent.KEYCODE_ENTER:
-          mTagButton.performClick();
-          mTagEditText.setText("");
+          addTag(mTagEditText.getText().toString());
           return true;
         default:
           return false;
         }
       }
-
     });
 
     mTagEditText.setOnTouchListener(new View.OnTouchListener() {
@@ -198,11 +196,15 @@ public class Tag extends Activity {
     for (int i = 0; i < mNewTags.size(); i++) {
       if (mNewTags.get(i).equals(tag)) {
         // tag already exists, abort
+        // TODO highlight the tag in tag layout
+        Toast.makeText(this, "Already added", Toast.LENGTH_SHORT).show();
         return false;
       }
     }
     mNewTags.add(tag);
     mTagLayout.addTag(tag);
+    mTagEditText.setText("");
+    // TODO propagate adding tag to listviews
     return true;
   }
 
