@@ -44,10 +44,10 @@
         <!-- TODO make black button styleable themeable -->
 		</LinearLayout>
 
-		<fm.last.android.widget.TagLayout
+		<com.applicake.android.widget.TagLayout
 			android:id="@+id/TagLayout" android:layout_width="fill_parent"
 			android:layout_height="170dip">
-		</fm.last.android.widget.TagLayout>
+		</com.applicake.android.widget.TagLayout>
 
 	<ListView android:id="@+id/TagList"
 		android:layout_width="fill_parent"

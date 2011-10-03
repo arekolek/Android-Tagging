@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="tag_add">Add</string>
-    
+    <string name="tagarea_hint">Enter a tag above,\nor choose one from below</string>
 </resources>
