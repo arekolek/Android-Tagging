@@ -75,7 +75,8 @@ public class TagListAdapter extends BaseAdapter implements OnTagChangeListener {
 
     ViewHolder holder;
 
-    if (row == null) {
+    // FIXME caching doesn't work right
+//    if (row == null) {
       LayoutInflater inflater = mContext.getLayoutInflater();
       row = inflater.inflate(R.layout.tag_row, null);
 
@@ -83,9 +84,9 @@ public class TagListAdapter extends BaseAdapter implements OnTagChangeListener {
       holder.label = (TextView) row.findViewById(R.id.row_label);
 
       row.setTag(holder);
-    } else {
-      holder = (ViewHolder) row.getTag();
-    }
+//    } else {
+//      holder = (ViewHolder) row.getTag();
+//    }
 
     // TODO remove hardcoded colors
     if (mList.get(position).added) {
