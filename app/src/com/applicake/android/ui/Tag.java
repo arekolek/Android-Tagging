@@ -41,6 +41,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Activity for tagging albums, artists and songs
@@ -51,10 +52,10 @@ public class Tag extends Activity {
   String mArtist;
   String mTrack;
 
-  ArrayList<String> mTrackOldTags;
-  ArrayList<String> mTrackNewTags;
-  ArrayList<String> mTopTags;
-  ArrayList<String> mUserTags;
+  ArrayList<String> mOldTags;
+  ArrayList<String> mNewTags = new ArrayList<String>(
+      Arrays.asList(new String[] { "elo" }));
+  ArrayList<String> mSuggestedTags;
 
   TagListAdapter mAdapter;
 
@@ -80,11 +81,6 @@ public class Tag extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
-    // mLogin = new DbImpl(this).getLogin();
-
-    mArtist = getIntent().getStringExtra("lastfm.artist");
-    mTrack = getIntent().getStringExtra("lastfm.track");
 
     // loading activity layout
     setContentView(R.layout.tag);
@@ -177,9 +173,9 @@ public class Tag extends Activity {
    * (mTopTags, mUserTags & mTrackNewTags)
    */
   private void fillData() {
-    mAdapter.setSource(mTopTags, mTrackNewTags);
-    for (int i = 0; i < mTrackNewTags.size(); i++) {
-      mTagLayout.addTag(mTrackNewTags.get(i));
+    mAdapter.setSource(mSuggestedTags, mNewTags);
+    for (int i = 0; i < mNewTags.size(); i++) {
+      mTagLayout.addTag(mNewTags.get(i));
     }
     mTagList.setAdapter(mAdapter);
   }
@@ -194,13 +190,13 @@ public class Tag extends Activity {
     if (!isValidTag(tag))
       return false;
 
-    for (int i = 0; i < mTrackNewTags.size(); i++) {
-      if (mTrackNewTags.get(i).equals(tag)) {
+    for (int i = 0; i < mNewTags.size(); i++) {
+      if (mNewTags.get(i).equals(tag)) {
         // tag already exists, abort
         return false;
       }
     }
-    mTrackNewTags.add(tag);
+    mNewTags.add(tag);
     mTagLayout.addTag(tag);
     return true;
   }
@@ -224,9 +220,9 @@ public class Tag extends Activity {
    * @param tag
    */
   private void removeTag(String tag) {
-    for (int i = mTrackNewTags.size() - 1; mTrackNewTags.size() > 0 && i >= 0; i--) {
-      if (mTrackNewTags.get(i).equals(tag)) {
-        mTrackNewTags.remove(i);
+    for (int i = mNewTags.size() - 1; mNewTags.size() > 0 && i >= 0; i--) {
+      if (mNewTags.get(i).equals(tag)) {
+        mNewTags.remove(i);
       }
     }
     mAdapter.tagUnadded(tag);
