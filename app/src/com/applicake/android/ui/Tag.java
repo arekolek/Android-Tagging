@@ -49,7 +49,7 @@ import java.util.Arrays;
  * 
  * @author Lukasz Wisniewski
  */
-public class Tag extends Activity {
+public class Tag extends Activity implements OnItemClickListener {
   String mArtist;
   String mTrack;
 
@@ -137,34 +137,7 @@ public class Tag extends Activity {
     });
     mTagLayout.setAreaHint(R.string.tagarea_hint);
 
-    mTagList.setOnItemClickListener(new OnItemClickListener() {
-
-      public void onItemClick(final AdapterView<?> parent, final View view,
-          final int position, long time) {
-        if (!animate) {
-          String tag = (String) parent.getItemAtPosition(position);
-          if (addTag(tag)) {
-            mFadeOutAnimation.setAnimationListener(new AnimationListener() {
-
-              public void onAnimationEnd(Animation animation) {
-                animate = false;
-              }
-
-              public void onAnimationRepeat(Animation animation) {
-              }
-
-              public void onAnimationStart(Animation animation) {
-                animate = true;
-              }
-
-            });
-            view.findViewById(R.id.row_label).startAnimation(mFadeOutAnimation);
-          }
-        }
-
-      }
-
-    });
+    mTagList.setOnItemClickListener(this);
 
     mAdapter = new TagListAdapter(this);
     fillData();
@@ -215,7 +188,7 @@ public class Tag extends Activity {
    * @return true if tag is valid
    */
   private boolean isValidTag(String tag) {
-    if (tag == null || tag.trim().length() == 0){
+    if (tag == null || tag.trim().length() == 0) {
       return false;
     }
     return true;
@@ -228,11 +201,35 @@ public class Tag extends Activity {
    */
   private void removeTag(String tag) {
     mNewTags.remove(tag);
-    
+
     // TODO notify mTagLayout
 
     // TODO convert to notifying all listviews
     mAdapter.onTagRemoved(tag);
+  }
+
+  @Override
+  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    if (!animate) {
+      String tag = (String) parent.getItemAtPosition(position);
+      if (addTag(tag)) {
+        mFadeOutAnimation.setAnimationListener(new AnimationListener() {
+
+          public void onAnimationEnd(Animation animation) {
+            animate = false;
+          }
+
+          public void onAnimationRepeat(Animation animation) {
+          }
+
+          public void onAnimationStart(Animation animation) {
+            animate = true;
+          }
+
+        });
+        view.findViewById(R.id.row_label).startAnimation(mFadeOutAnimation);
+      }
+    }
   }
 
 }
