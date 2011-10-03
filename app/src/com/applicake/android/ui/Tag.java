@@ -93,10 +93,6 @@ public class Tag extends Activity {
     mTagLayout = (TagLayout) findViewById(R.id.TagLayout);
     mTagList = (ListView) findViewById(R.id.TagList);
 
-    mAdapter = new TagListAdapter(this);
-    mAdapter.setSource(mSuggestedTags, mNewTags);
-    mTagList.setAdapter(mAdapter);
-    
     // loading & setting animations
     mFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.tag_row_fadeout);
     mTagLayout.setAnimationsEnabled(true);
@@ -171,6 +167,9 @@ public class Tag extends Activity {
       }
 
     });
+    
+    mAdapter = new TagListAdapter(this);
+    fillData();
 
   }
 
