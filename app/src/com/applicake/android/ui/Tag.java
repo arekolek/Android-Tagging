@@ -215,9 +215,9 @@ public class Tag extends Activity {
    * @return true if tag is valid
    */
   private boolean isValidTag(String tag) {
-    if (tag == null || tag.trim().length() == 0)
+    if (tag == null || tag.trim().length() == 0){
       return false;
-
+    }
     return true;
   }
 
