@@ -21,8 +21,8 @@
 package com.applicake.android.ui;
 
 import com.applicake.android.R;
+import com.applicake.android.widget.OnTagChangeListener;
 import com.applicake.android.widget.TagLayout;
-import com.applicake.android.widget.TagLayoutListener;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -57,7 +57,7 @@ public class Tag extends Activity {
   ArrayList<String> mNewTags = new ArrayList<String>(
       Arrays.asList(new String[] { "elo" }));
   ArrayList<String> mSuggestedTags = new ArrayList<String>(Arrays.asList(new String[] {
-      "raz", "dwa", "trzy", "elo" , "cztery", "pi´ç"}));
+      "raz", "dwa", "trzy", "elo", "cztery", "pi´ç" }));
 
   TagListAdapter mAdapter;
 
@@ -86,7 +86,6 @@ public class Tag extends Activity {
 
     // loading activity layout
     setContentView(R.layout.tag);
-
 
     // binding views to XML-layout
     mTagEditText = (EditText) findViewById(R.id.tag_text_edit);
@@ -127,12 +126,14 @@ public class Tag extends Activity {
 
     });
 
-    mTagLayout.setTagLayoutListener(new TagLayoutListener() {
-
-      public void tagRemoved(String tag) {
-        removeTag(tag);
+    mTagLayout.setTagRemovingListener(new OnTagChangeListener() {
+      @Override
+      public void onTagAdded(String tag) {
       }
 
+      public void onTagRemoved(String tag) {
+        removeTag(tag);
+      }
     });
     mTagLayout.setAreaHint(R.string.tagarea_hint);
 
@@ -146,7 +147,6 @@ public class Tag extends Activity {
             mFadeOutAnimation.setAnimationListener(new AnimationListener() {
 
               public void onAnimationEnd(Animation animation) {
-                ((TagListAdapter) parent.getAdapter()).tagAdded(position);
                 animate = false;
               }
 
@@ -165,7 +165,7 @@ public class Tag extends Activity {
       }
 
     });
-    
+
     mAdapter = new TagListAdapter(this);
     fillData();
 
@@ -204,7 +204,9 @@ public class Tag extends Activity {
     mNewTags.add(tag);
     mTagLayout.addTag(tag);
     mTagEditText.setText("");
-    // TODO propagate adding tag to listviews
+
+    // TODO convert to notifying all listviews
+    mAdapter.onTagAdded(tag);
     return true;
   }
 
@@ -232,7 +234,9 @@ public class Tag extends Activity {
         mNewTags.remove(i);
       }
     }
-    mAdapter.tagUnadded(tag);
+
+    // TODO convert to notifying all listviews
+    mAdapter.onTagRemoved(tag);
   }
 
 }

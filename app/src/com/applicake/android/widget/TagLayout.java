@@ -47,7 +47,7 @@ public class TagLayout extends ViewGroup {
 
   public static final String TAG = "TagLayout";
 
-  TagLayoutListener mListener;
+  OnTagChangeListener mListener;
 
   Map<String, TagButton> mTagButtons;
   TextView mAreaHint;
@@ -135,7 +135,7 @@ public class TagLayout extends ViewGroup {
 
     mTagButtons.put(tag, tagButton);
     this.addView(tagButton, params);
-
+    
     if (mAnimationEnabled) {
       Animation a = AnimationUtils.loadAnimation(this.getContext(), R.anim.tag_fadein);
       a.setAnimationListener(new AnimationListener() {
@@ -195,7 +195,7 @@ public class TagLayout extends ViewGroup {
   private void reallyRemoveTag(String tag) {
     this.removeView(mTagButtons.remove(tag));
     if (mListener != null) {
-      mListener.tagRemoved(tag);
+      mListener.onTagRemoved(tag);
     }
   }
 
@@ -274,8 +274,15 @@ public class TagLayout extends ViewGroup {
 
   }
 
-  public void setTagLayoutListener(TagLayoutListener l) {
-    this.mListener = l;
+  /**
+   * Set a listener that will receive a callback when a tag is removed from this view.
+   * 
+   * You don't need to implement onTagAdded here, as it won't be invoked here.
+   * 
+   * @param listener
+   */
+  public void setTagRemovingListener(OnTagChangeListener listener) {
+    this.mListener = listener;
   }
 
   /**

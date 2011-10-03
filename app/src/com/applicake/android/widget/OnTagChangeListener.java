@@ -21,16 +21,20 @@
 package com.applicake.android.widget;
 
 /**
- * Listener to TagLayout events
- * 
- * @author Lukasz Wisniewski
+ * Interface definition for callbacks when a tag should be added or removed.
  */
-public interface TagLayoutListener {
-	/**
-	 * Notifies of click on TagButton inside TagLayout which equals removing the
-	 * tag
-	 * 
-	 * @param tag
-	 */
-	public void tagRemoved(String tag);
+public interface OnTagChangeListener {
+  /**
+   * Notifies that a tag is being added
+   * 
+   * @param tag
+   */
+  public void onTagAdded(String tag);
+
+  /**
+   * Notifies that a tag is being removed
+   * 
+   * @param tag
+   */
+  public void onTagRemoved(String tag);
 }
