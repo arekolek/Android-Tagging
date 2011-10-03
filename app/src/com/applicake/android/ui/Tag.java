@@ -55,7 +55,8 @@ public class Tag extends Activity {
   ArrayList<String> mOldTags;
   ArrayList<String> mNewTags = new ArrayList<String>(
       Arrays.asList(new String[] { "elo" }));
-  ArrayList<String> mSuggestedTags;
+  ArrayList<String> mSuggestedTags = new ArrayList<String>(Arrays.asList(new String[] {
+      "raz", "dwa", "trzy", "elo" }));
 
   TagListAdapter mAdapter;
 
@@ -85,12 +86,17 @@ public class Tag extends Activity {
     // loading activity layout
     setContentView(R.layout.tag);
 
+
     // binding views to XML-layout
     mTagEditText = (EditText) findViewById(R.id.tag_text_edit);
     mTagButton = (Button) findViewById(R.id.tag_add_button);
     mTagLayout = (TagLayout) findViewById(R.id.TagLayout);
     mTagList = (ListView) findViewById(R.id.TagList);
 
+    mAdapter = new TagListAdapter(this);
+    mAdapter.setSource(mSuggestedTags, mNewTags);
+    mTagList.setAdapter(mAdapter);
+    
     // loading & setting animations
     mFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.tag_row_fadeout);
     mTagLayout.setAnimationsEnabled(true);
