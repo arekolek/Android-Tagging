@@ -193,13 +193,11 @@ public class Tag extends Activity {
     if (!isValidTag(tag))
       return false;
 
-    for (int i = 0; i < mNewTags.size(); i++) {
-      if (mNewTags.get(i).equals(tag)) {
-        // tag already exists, abort
-        // TODO highlight the tag in tag layout
-        Toast.makeText(this, "Already added", Toast.LENGTH_SHORT).show();
-        return false;
-      }
+    if (mNewTags.contains(tag)) {
+      // tag already exists, abort
+      // TODO highlight the tag in tag layout
+      Toast.makeText(this, "Already added", Toast.LENGTH_SHORT).show();
+      return false;
     }
     mNewTags.add(tag);
     mTagLayout.addTag(tag);
@@ -224,16 +222,14 @@ public class Tag extends Activity {
   }
 
   /**
-   * Removes given tag from mTagLayout and mTrackNewTags
+   * Removes given tag from mTagLayout, mNewTags and listviews
    * 
    * @param tag
    */
   private void removeTag(String tag) {
-    for (int i = mNewTags.size() - 1; mNewTags.size() > 0 && i >= 0; i--) {
-      if (mNewTags.get(i).equals(tag)) {
-        mNewTags.remove(i);
-      }
-    }
+    mNewTags.remove(tag);
+    
+    // TODO notify mTagLayout
 
     // TODO convert to notifying all listviews
     mAdapter.onTagRemoved(tag);
