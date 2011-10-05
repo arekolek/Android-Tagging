@@ -80,6 +80,7 @@ public class Tag extends Activity implements OnItemClickListener {
   ListView mTagList;
 
   ProgressDialog mSaveDialog;
+  private Animation mFadeInAnimation;
 
   // --------------------------------
   // XML LAYOUT start
@@ -99,7 +100,23 @@ public class Tag extends Activity implements OnItemClickListener {
     mTagList = (ListView) findViewById(R.id.TagList);
 
     // loading & setting animations
+    AnimationListener listener = new AnimationListener() {
+      public void onAnimationEnd(Animation animation) {
+        mAdapter.notifyDataSetInvalidated();
+        animate = false;
+      }
+
+      public void onAnimationRepeat(Animation animation) {
+      }
+
+      public void onAnimationStart(Animation animation) {
+        animate = true;
+      }
+    };
     mFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.tag_row_fadeout);
+    mFadeOutAnimation.setAnimationListener(listener);
+    mFadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.tag_item_fadein);
+    mFadeInAnimation.setAnimationListener(listener);
     mTagLayout.setAnimationsEnabled(true);
 
     // add callback listeners
@@ -107,7 +124,7 @@ public class Tag extends Activity implements OnItemClickListener {
       public boolean onKey(View v, int keyCode, KeyEvent event) {
         switch (event.getKeyCode()) {
         case KeyEvent.KEYCODE_ENTER:
-          addTag(mTagEditText.getText().toString());
+          addTagFromInput();
           return true;
         default:
           return false;
@@ -123,12 +140,11 @@ public class Tag extends Activity implements OnItemClickListener {
     });
 
     mTagButton.setOnClickListener(new OnClickListener() {
-
       public void onClick(View v) {
-        if (mTagEditText != null)
-          addTag(mTagEditText.getText().toString());
+        if (mTagEditText != null) {
+          addTagFromInput();
+        }
       }
-
     });
 
     mTagLayout.setTagRemovingListener(new OnTagChangeListener() {
@@ -138,6 +154,8 @@ public class Tag extends Activity implements OnItemClickListener {
 
       public void onTagRemoved(String tag) {
         removeTag(tag);
+        // TODO convert to notifying all listviews
+        mAdapter.onTagRemoved(tag);
       }
     });
     mTagLayout.setAreaHint(R.string.tagarea_hint);
@@ -150,6 +168,26 @@ public class Tag extends Activity implements OnItemClickListener {
     }
     mTagList.setAdapter(mAdapter);
 
+  }
+
+  private void addTagFromInput() {
+    String tag = mTagEditText.getText().toString();
+    addTag(tag);
+    // TODO convert to notifying all listviews
+    mAdapter.onTagAdded(tag);
+  }
+
+  /**
+   * Validates a tag
+   * 
+   * @param tag
+   * @return true if tag is valid
+   */
+  private boolean isValidTag(String tag) {
+    if (tag == null || tag.trim().length() == 0) {
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -172,21 +210,6 @@ public class Tag extends Activity implements OnItemClickListener {
     mTagLayout.addTag(tag);
     mTagEditText.setText("");
 
-    // TODO convert to notifying all listviews
-    mAdapter.onTagAdded(tag);
-    return true;
-  }
-
-  /**
-   * Validates a tag
-   * 
-   * @param tag
-   * @return true if tag is valid
-   */
-  private boolean isValidTag(String tag) {
-    if (tag == null || tag.trim().length() == 0) {
-      return false;
-    }
     return true;
   }
 
@@ -199,35 +222,20 @@ public class Tag extends Activity implements OnItemClickListener {
     mNewTags.remove(tag);
 
     mTagLayout.onTagRemoved(tag);
-
-    // TODO convert to notifying all listviews
-    mAdapter.onTagRemoved(tag);
   }
 
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     if (!animate) {
       String tag = (String) parent.getItemAtPosition(position);
-      if (!mNewTags.contains(tag)) {
-        if (addTag(tag)) {
-          mFadeOutAnimation.setAnimationListener(new AnimationListener() {
-
-            public void onAnimationEnd(Animation animation) {
-              animate = false;
-            }
-
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-            public void onAnimationStart(Animation animation) {
-              animate = true;
-            }
-
-          });
-          view.findViewById(R.id.row_label).startAnimation(mFadeOutAnimation);
-        }
-      } else {
+      View label = view.findViewById(R.id.row_label);
+      if (mNewTags.contains(tag)) {
         removeTag(tag);
+        label.startAnimation(mFadeInAnimation);
+      } else {
+        if (addTag(tag)) {
+          label.startAnimation(mFadeOutAnimation);
+        }
       }
     }
   }
