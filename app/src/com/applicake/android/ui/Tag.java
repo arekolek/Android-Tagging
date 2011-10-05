@@ -47,6 +47,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Activity for tagging albums, artists and songs
@@ -143,21 +144,12 @@ public class Tag extends Activity implements OnItemClickListener {
 
     mTagList.setOnItemClickListener(this);
 
-    mAdapter = new TagListAdapter(this);
-    fillData();
-
-  }
-
-  /**
-   * Fills mTopTagListAdapter, mUserTagListListAdapter and mTagLayout with data
-   * (mTopTags, mUserTags & mTrackNewTags)
-   */
-  private void fillData() {
-    mAdapter.setSource(mSuggestedTags, mNewTags);
+    mAdapter = new TagListAdapter(this, mSuggestedTags);
     for (int i = 0; i < mNewTags.size(); i++) {
       mTagLayout.addTag(mNewTags.get(i));
     }
     mTagList.setAdapter(mAdapter);
+
   }
 
   /**
@@ -238,33 +230,12 @@ public class Tag extends Activity implements OnItemClickListener {
 
   public class TagListAdapter extends BaseAdapter implements OnTagChangeListener {
 
-    /**
-     * Internal class representing single row entry
-     * 
-     * @author Lukasz Wisniewski
-     */
-    private class Entry {
-      /**
-       * Text to be displayed
-       */
-      String text;
-      /**
-       * Indicates whether the entry has already been added meaning whether it
-       * should be grayed out
-       */
-      boolean added;
-
-      public Entry(String text, boolean added) {
-        this.text = text;
-        this.added = added;
-      }
-    }
-
-    private ArrayList<Entry> mList;
+    private List<String> mList;
     private Activity mContext;
 
-    public TagListAdapter(Activity context) {
+    public TagListAdapter(Activity context, List<String> tags) {
       mContext = context;
+      mList = tags;
     }
 
     @Override
@@ -287,14 +258,14 @@ public class Tag extends Activity implements OnItemClickListener {
       //      }
 
       // TODO remove hardcoded colors
-      if (mList.get(position).added) {
-        holder.label.setTextColor(0x337a7a7a);
-      } else {
+      if (isEnabled(position)) {
         holder.label.setTextColor(mContext.getResources().getColorStateList(
             R.drawable.list_entry_color));
+      } else {
+        holder.label.setTextColor(0x337a7a7a);
       }
 
-      holder.label.setText(mList.get(position).text);
+      holder.label.setText(mList.get(position));
 
       return row;
     }
@@ -309,7 +280,7 @@ public class Tag extends Activity implements OnItemClickListener {
 
     @Override
     public Object getItem(int position) {
-      return mList.get(position).text;
+      return mList.get(position);
     }
 
     @Override
@@ -319,59 +290,17 @@ public class Tag extends Activity implements OnItemClickListener {
 
     @Override
     public boolean isEnabled(int position) {
-      return !mList.get(position).added;
-    }
-
-    /**
-     * Sets data source (ArrayList of tags) for this adapter
-     * 
-     * @param tags
-     *          ArrayList of tags
-     */
-    public void setSource(ArrayList<String> tags) {
-      setSource(tags, null);
-    }
-
-    /**
-     * Sets data source (ArrayList of tags) for this adapter, additionally
-     * allows to disable so called present tags which could have been previously
-     * added by the user and we want them to be grayed out
-     * 
-     * @param tags
-     *          ArrayList of tags
-     * @param presentTags
-     *          ArrayList of already added tags or null
-     */
-    public void setSource(ArrayList<String> tags, ArrayList<String> presentTags) {
-      mList = new ArrayList<Entry>();
-      for (int i = 0; i < tags.size(); i++) {
-        Entry entry = new Entry(tags.get(i), false);
-        if (presentTags != null) {
-          entry.added = presentTags.contains(tags.get(i));
-        }
-        mList.add(entry);
-      }
-      notifyDataSetChanged();
+      return !mNewTags.contains(getItem(position));
     }
 
     @Override
     public void onTagAdded(String tag) {
-      updateTag(tag, true);
+      notifyDataSetChanged();
     }
 
     @Override
     public void onTagRemoved(String tag) {
-      updateTag(tag, false);
-    }
-
-    private int updateTag(String tag, boolean added) {
-      for (int i = 0; i < mList.size(); i++) {
-        if (mList.get(i).text.equals(tag)) {
-          mList.get(i).added = added;
-          notifyDataSetChanged();
-        }
-      }
-      return -1;
+      notifyDataSetChanged();
     }
 
   }
