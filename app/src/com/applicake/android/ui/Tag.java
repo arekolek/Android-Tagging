@@ -198,7 +198,7 @@ public class Tag extends Activity implements OnItemClickListener {
   private void removeTag(String tag) {
     mNewTags.remove(tag);
 
-    // TODO notify mTagLayout
+    mTagLayout.onTagRemoved(tag);
 
     // TODO convert to notifying all listviews
     mAdapter.onTagRemoved(tag);
@@ -208,22 +208,26 @@ public class Tag extends Activity implements OnItemClickListener {
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     if (!animate) {
       String tag = (String) parent.getItemAtPosition(position);
-      if (addTag(tag)) {
-        mFadeOutAnimation.setAnimationListener(new AnimationListener() {
+      if (!mNewTags.contains(tag)) {
+        if (addTag(tag)) {
+          mFadeOutAnimation.setAnimationListener(new AnimationListener() {
 
-          public void onAnimationEnd(Animation animation) {
-            animate = false;
-          }
+            public void onAnimationEnd(Animation animation) {
+              animate = false;
+            }
 
-          public void onAnimationRepeat(Animation animation) {
-          }
+            public void onAnimationRepeat(Animation animation) {
+            }
 
-          public void onAnimationStart(Animation animation) {
-            animate = true;
-          }
+            public void onAnimationStart(Animation animation) {
+              animate = true;
+            }
 
-        });
-        view.findViewById(R.id.row_label).startAnimation(mFadeOutAnimation);
+          });
+          view.findViewById(R.id.row_label).startAnimation(mFadeOutAnimation);
+        }
+      } else {
+        removeTag(tag);
       }
     }
   }
@@ -258,11 +262,11 @@ public class Tag extends Activity implements OnItemClickListener {
       //      }
 
       // TODO remove hardcoded colors
-      if (isEnabled(position)) {
+      if (mNewTags.contains(getItem(position))) {
+        holder.label.setTextColor(0x337a7a7a);
+      } else {
         holder.label.setTextColor(mContext.getResources().getColorStateList(
             R.drawable.list_entry_color));
-      } else {
-        holder.label.setTextColor(0x337a7a7a);
       }
 
       holder.label.setText(mList.get(position));
@@ -289,18 +293,17 @@ public class Tag extends Activity implements OnItemClickListener {
     }
 
     @Override
-    public boolean isEnabled(int position) {
-      return !mNewTags.contains(getItem(position));
-    }
-
-    @Override
     public void onTagAdded(String tag) {
-      notifyDataSetChanged();
+      if (mList.contains(tag)) {
+        notifyDataSetInvalidated();
+      }
     }
 
     @Override
     public void onTagRemoved(String tag) {
-      notifyDataSetChanged();
+      if (mList.contains(tag)) {
+        notifyDataSetInvalidated();
+      }
     }
 
   }

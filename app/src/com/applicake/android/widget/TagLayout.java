@@ -43,7 +43,7 @@ import java.util.TreeMap;
  * 
  * @author Lukasz Wisniewski
  */
-public class TagLayout extends ViewGroup {
+public class TagLayout extends ViewGroup implements OnTagChangeListener {
 
   public static final String TAG = "TagLayout";
 
@@ -128,6 +128,9 @@ public class TagLayout extends ViewGroup {
 
       public void onClick(View v) {
         removeTag(tag);
+        if (mListener != null) {
+          mListener.onTagRemoved(tag);
+        }
       }
 
     });
@@ -135,7 +138,7 @@ public class TagLayout extends ViewGroup {
 
     mTagButtons.put(tag, tagButton);
     this.addView(tagButton, params);
-    
+
     if (mAnimationEnabled) {
       Animation a = AnimationUtils.loadAnimation(this.getContext(), R.anim.tag_fadein);
       a.setAnimationListener(new AnimationListener() {
@@ -161,42 +164,28 @@ public class TagLayout extends ViewGroup {
    * @param tag
    */
   private void removeTag(final String tag) {
-    if (!mAnimationEnabled) {
-      reallyRemoveTag(tag);
-      return;
+    if (mAnimationEnabled) {
+      TagButton tb = mTagButtons.get(tag);
+      Animation a = AnimationUtils.loadAnimation(this.getContext(), R.anim.tag_fadeout);
+      a.setAnimationListener(new AnimationListener() {
+
+        public void onAnimationEnd(Animation animation) {
+          mAnimating = false;
+          TagLayout.this.requestLayout();
+        }
+
+        public void onAnimationRepeat(Animation animation) {
+        }
+
+        public void onAnimationStart(Animation animation) {
+        }
+
+      });
+      mAnimating = true;
+      tb.startAnimation(a);
     }
 
-    TagButton tb = mTagButtons.get(tag);
-    Animation a = AnimationUtils.loadAnimation(this.getContext(), R.anim.tag_fadeout);
-    a.setAnimationListener(new AnimationListener() {
-
-      public void onAnimationEnd(Animation animation) {
-        mAnimating = false;
-        TagLayout.this.requestLayout();
-      }
-
-      public void onAnimationRepeat(Animation animation) {
-      }
-
-      public void onAnimationStart(Animation animation) {
-      }
-
-    });
-    mAnimating = true;
-    tb.startAnimation(a);
-    reallyRemoveTag(tag);
-  }
-
-  /**
-   * Sharable part of code, which really removes the tag
-   * 
-   * @param tag
-   */
-  private void reallyRemoveTag(String tag) {
-    this.removeView(mTagButtons.remove(tag));
-    if (mListener != null) {
-      mListener.onTagRemoved(tag);
-    }
+    removeView(mTagButtons.remove(tag));
   }
 
   @Override
@@ -275,7 +264,8 @@ public class TagLayout extends ViewGroup {
   }
 
   /**
-   * Set a listener that will receive a callback when a tag is removed from this view.
+   * Set a listener that will receive a callback when a tag is removed from this
+   * view.
    * 
    * You don't need to implement onTagAdded here, as it won't be invoked here.
    * 
@@ -304,6 +294,17 @@ public class TagLayout extends ViewGroup {
   public void setAreaHint(int resid) {
     mAreaTextId = resid;
     mAreaHint.setText(resid);
+  }
+
+  @Override
+  public void onTagAdded(String tag) {
+  }
+
+  @Override
+  public void onTagRemoved(String tag) {
+    if (mTagButtons.containsKey(tag)) {
+      removeTag(tag);
+    }
   }
 
 }
