@@ -26,6 +26,7 @@ import com.applicake.android.widget.TagLayout;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -55,6 +56,7 @@ import java.util.List;
  * @author Lukasz Wisniewski
  */
 public class TaggingActivity extends Activity implements OnItemClickListener {
+  public static final String EXTRA_RESULT_TAGS = "tags_result";
   String mArtist;
   String mTrack;
 
@@ -81,6 +83,7 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
 
   ProgressDialog mSaveDialog;
   private Animation mFadeInAnimation;
+  private String mAction;
 
   // --------------------------------
   // XML LAYOUT start
@@ -92,6 +95,13 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
 
     // loading activity layout
     setContentView(R.layout.tag);
+
+    mAction = getIntent().getAction();
+
+    // TODO some other action?
+    if (Intent.ACTION_VIEW.equals(mAction)) {
+//      findViewById(R.id.)
+    }
 
     // binding views to XML-layout
     mTagEditText = (EditText) findViewById(R.id.tag_text_edit);
@@ -167,7 +177,6 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
       mTagLayout.addTag(mNewTags.get(i));
     }
     mTagList.setAdapter(mAdapter);
-
   }
 
   private void addTagFromInput() {
