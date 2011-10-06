@@ -54,7 +54,7 @@ import java.util.List;
  * 
  * @author Lukasz Wisniewski
  */
-public class Tag extends Activity implements OnItemClickListener {
+public class TaggingActivity extends Activity implements OnItemClickListener {
   String mArtist;
   String mTrack;
 

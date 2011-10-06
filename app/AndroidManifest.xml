@@ -7,6 +7,6 @@
   <uses-sdk android:minSdkVersion="7" />
 
   <application>
-      <activity android:name=".ui.Tag" />
+      <activity android:name=".ui.TaggingActivity" />
   </application>
 </manifest>
