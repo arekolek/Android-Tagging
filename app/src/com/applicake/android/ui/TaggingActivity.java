@@ -99,9 +99,21 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
     mAction = getIntent().getAction();
 
     // TODO some other action?
-    if (Intent.ACTION_VIEW.equals(mAction)) {
-//      findViewById(R.id.)
-    }
+    //    if (Intent.ACTION_VIEW.equals(mAction)) {
+    findViewById(R.id.save).setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        save();
+      }
+    });
+    findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        setResult(RESULT_CANCELED);
+        finish();
+      }
+    });
+    //    }
 
     // binding views to XML-layout
     mTagEditText = (EditText) findViewById(R.id.tag_text_edit);
@@ -177,6 +189,13 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
       mTagLayout.addTag(mNewTags.get(i));
     }
     mTagList.setAdapter(mAdapter);
+  }
+
+  private void save() {
+    Intent data = new Intent();
+    data.putExtra(EXTRA_RESULT_TAGS, mNewTags);
+    setResult(RESULT_OK, data);
+    finish();
   }
 
   private void addTagFromInput() {
