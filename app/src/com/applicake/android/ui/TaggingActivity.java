@@ -47,7 +47,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -57,14 +56,11 @@ import java.util.List;
  */
 public class TaggingActivity extends Activity implements OnItemClickListener {
   public static final String EXTRA_RESULT_TAGS = "tags_result";
-  String mArtist;
-  String mTrack;
+  public static final String EXTRA_CURRENT_TAGS = "tags_current";
+  public static final String EXTRA_SUGGESTED_TAGS = "tags_suggested";
 
-  ArrayList<String> mOldTags;
-  ArrayList<String> mNewTags = new ArrayList<String>(
-      Arrays.asList(new String[] { "elo" }));
-  ArrayList<String> mSuggestedTags = new ArrayList<String>(Arrays.asList(new String[] {
-      "raz", "dwa", "trzy", "elo", "cztery", "pi´ç" }));
+  ArrayList<String> mTags;
+  ArrayList<String> mSuggestedTags;
 
   TagListAdapter mAdapter;
 
@@ -96,7 +92,11 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
     // loading activity layout
     setContentView(R.layout.tag);
 
-    mAction = getIntent().getAction();
+    final Intent intent = getIntent();
+    mAction = intent.getAction();
+
+    mTags = intent.getStringArrayListExtra(EXTRA_CURRENT_TAGS);
+    mSuggestedTags = intent.getStringArrayListExtra(EXTRA_SUGGESTED_TAGS);
 
     // TODO some other action?
     //    if (Intent.ACTION_VIEW.equals(mAction)) {
@@ -185,15 +185,15 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
     mTagList.setOnItemClickListener(this);
 
     mAdapter = new TagListAdapter(this, mSuggestedTags);
-    for (int i = 0; i < mNewTags.size(); i++) {
-      mTagLayout.addTag(mNewTags.get(i));
+    for (int i = 0; i < mTags.size(); i++) {
+      mTagLayout.addTag(mTags.get(i));
     }
     mTagList.setAdapter(mAdapter);
   }
 
   private void save() {
     Intent data = new Intent();
-    data.putExtra(EXTRA_RESULT_TAGS, mNewTags);
+    data.putExtra(EXTRA_RESULT_TAGS, mTags);
     setResult(RESULT_OK, data);
     finish();
   }
@@ -228,13 +228,13 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
     if (!isValidTag(tag))
       return false;
 
-    if (mNewTags.contains(tag)) {
+    if (mTags.contains(tag)) {
       // tag already exists, abort
       // TODO highlight the tag in tag layout
       Toast.makeText(this, "Already added", Toast.LENGTH_SHORT).show();
       return false;
     }
-    mNewTags.add(tag);
+    mTags.add(tag);
     mTagLayout.addTag(tag);
     mTagEditText.setText("");
 
@@ -247,7 +247,7 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
    * @param tag
    */
   private void removeTag(String tag) {
-    mNewTags.remove(tag);
+    mTags.remove(tag);
 
     mTagLayout.onTagRemoved(tag);
   }
@@ -257,7 +257,7 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
     if (!animate) {
       String tag = (String) parent.getItemAtPosition(position);
       View label = view.findViewById(R.id.row_label);
-      if (mNewTags.contains(tag)) {
+      if (mTags.contains(tag)) {
         removeTag(tag);
         label.startAnimation(mFadeInAnimation);
       } else {
@@ -298,7 +298,7 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
       //      }
 
       // TODO remove hardcoded colors
-      if (mNewTags.contains(getItem(position))) {
+      if (mTags.contains(getItem(position))) {
         holder.label.setTextColor(0x337a7a7a);
       } else {
         holder.label.setTextColor(mContext.getResources().getColorStateList(
