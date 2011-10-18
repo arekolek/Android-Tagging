@@ -80,6 +80,7 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
   ProgressDialog mSaveDialog;
   private Animation mFadeInAnimation;
   private String mAction;
+  private boolean mPickOnly;
 
   // --------------------------------
   // XML LAYOUT start
@@ -97,6 +98,8 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
 
     mTags = intent.getStringArrayListExtra(EXTRA_CURRENT_TAGS);
     mSuggestedTags = intent.getStringArrayListExtra(EXTRA_SUGGESTED_TAGS);
+
+    mPickOnly = Intent.ACTION_PICK.equals(mAction);
 
     // TODO some other action?
     //    if (Intent.ACTION_VIEW.equals(mAction)) {
@@ -116,8 +119,13 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
     //    }
 
     // binding views to XML-layout
-    mTagEditText = (EditText) findViewById(R.id.tag_text_edit);
-    mTagButton = (Button) findViewById(R.id.tag_add_button);
+
+    if (mPickOnly) {
+      findViewById(R.id.add_new_tag_bar).setVisibility(View.GONE);
+    } else {
+      mTagEditText = (EditText) findViewById(R.id.tag_text_edit);
+      mTagButton = (Button) findViewById(R.id.tag_add_button);
+    }
     mTagLayout = (TagLayout) findViewById(R.id.TagLayout);
     mTagList = (ListView) findViewById(R.id.TagList);
 
@@ -141,33 +149,35 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
     mFadeInAnimation.setAnimationListener(listener);
     mTagLayout.setAnimationsEnabled(true);
 
-    // add callback listeners
-    mTagEditText.setOnKeyListener(new View.OnKeyListener() {
-      public boolean onKey(View v, int keyCode, KeyEvent event) {
-        switch (event.getKeyCode()) {
-        case KeyEvent.KEYCODE_ENTER:
-          addTagFromInput();
-          return true;
-        default:
+    // add callback listeners if not in pick only mode
+    if (!mPickOnly) {
+      mTagEditText.setOnKeyListener(new View.OnKeyListener() {
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
+          switch (event.getKeyCode()) {
+          case KeyEvent.KEYCODE_ENTER:
+            addTagFromInput();
+            return true;
+          default:
+            return false;
+          }
+        }
+      });
+
+      mTagEditText.setOnTouchListener(new View.OnTouchListener() {
+        public boolean onTouch(View v, MotionEvent event) {
+          mTagEditText.requestFocusFromTouch();
           return false;
         }
-      }
-    });
+      });
 
-    mTagEditText.setOnTouchListener(new View.OnTouchListener() {
-      public boolean onTouch(View v, MotionEvent event) {
-        mTagEditText.requestFocusFromTouch();
-        return false;
-      }
-    });
-
-    mTagButton.setOnClickListener(new OnClickListener() {
-      public void onClick(View v) {
-        if (mTagEditText != null) {
-          addTagFromInput();
+      mTagButton.setOnClickListener(new OnClickListener() {
+        public void onClick(View v) {
+          if (mTagEditText != null) {
+            addTagFromInput();
+          }
         }
-      }
-    });
+      });
+    }
 
     mTagLayout.setTagRemovingListener(new OnTagChangeListener() {
       @Override
@@ -180,7 +190,8 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
         mAdapter.onTagRemoved(tag);
       }
     });
-    mTagLayout.setAreaHint(R.string.tagarea_hint);
+
+    mTagLayout.setAreaHint(mPickOnly ? R.string.picker_hint : R.string.tagarea_hint);
 
     mTagList.setOnItemClickListener(this);
 
@@ -236,6 +247,7 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
     }
     mTags.add(tag);
     mTagLayout.addTag(tag);
+    if (!mPickOnly)
     mTagEditText.setText("");
 
     return true;

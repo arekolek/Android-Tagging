@@ -2,4 +2,5 @@
 <resources>
     <string name="tag_add">Add</string>
     <string name="tagarea_hint">Enter a tag above,\nor choose one from below</string>
+    <string name="picker_hint">Pick tags to filter the list</string>
 </resources>
