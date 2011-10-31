@@ -216,6 +216,10 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
     Button addButton = (Button) findViewById(R.id.tag_add_button);
     addButton.setBackgroundResource(addTagButton);
     addButton.setTextColor(addTagColor);
+    CharSequence title = a.getText(R.styleable.TagTheme_headerCustomTitle);
+    if (title != null) {
+      ((TextView) findViewById(R.id.header)).setText(title);
+    }
   }
 
   private void save() {

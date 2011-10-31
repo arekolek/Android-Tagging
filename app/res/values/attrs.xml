@@ -8,6 +8,8 @@
         <attr format="reference" name="addBarBackground" />
         <attr format="reference" name="addButtonBackground" />
         <attr format="reference" name="addButtonTextColor" />
+        <attr format="reference" name="headerStyle" />
+        <attr format="reference" name="headerCustomTitle" />
     </declare-styleable>
 
 </resources>

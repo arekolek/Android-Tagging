@@ -62,6 +62,17 @@
         android:layout_height="170dip" >
     </com.applicake.android.widget.TagLayout>
 
+    <TextView
+        android:id="@+id/header"
+        style="?headerStyle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingBottom="3dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="3dp"
+        android:text="Suggested tags" />
+
     <ListView
         android:id="@+id/TagList"
         android:layout_width="fill_parent"
