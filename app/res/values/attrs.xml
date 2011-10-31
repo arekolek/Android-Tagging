@@ -5,6 +5,9 @@
         <attr format="reference" name="tagsBackground" />
         <attr format="reference" name="tagDrawable" />
         <attr format="reference" name="tagListItem" />
+        <attr format="reference" name="addBarBackground" />
+        <attr format="reference" name="addButtonBackground" />
+        <attr format="reference" name="addButtonTextColor" />
     </declare-styleable>
 
 </resources>

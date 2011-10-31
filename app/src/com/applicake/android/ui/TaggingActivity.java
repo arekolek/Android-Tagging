@@ -94,6 +94,8 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
     // loading activity layout
     setContentView(R.layout.tag);
 
+    init();
+
     final Intent intent = getIntent();
     mAction = intent.getAction();
 
@@ -201,6 +203,19 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
       mTagLayout.addTag(mTags.get(i));
     }
     mTagList.setAdapter(mAdapter);
+  }
+
+  private void init() {
+    TypedArray a = getTheme().obtainStyledAttributes(R.styleable.TagTheme);
+    int addTagBar = a.getResourceId(R.styleable.TagTheme_addBarBackground,
+        R.drawable.tab_bar_rest);
+    int addTagButton = a.getResourceId(R.styleable.TagTheme_addButtonBackground,
+        R.drawable.black_button);
+    int addTagColor = a.getColor(R.styleable.TagTheme_addButtonTextColor, 0xffffffff);
+    findViewById(R.id.add_new_tag_bar).setBackgroundResource(addTagBar);
+    Button addButton = (Button) findViewById(R.id.tag_add_button);
+    addButton.setBackgroundResource(addTagButton);
+    addButton.setTextColor(addTagColor);
   }
 
   private void save() {
