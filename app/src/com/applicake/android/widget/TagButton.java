@@ -18,11 +18,13 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
+
 package com.applicake.android.widget;
 
 import com.applicake.android.R;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -38,92 +40,98 @@ import android.widget.Button;
  */
 public class TagButton extends Button {
 
-  public static final String TAG = "TagButton";
+    public static final String TAG = "TagButton";
 
-  private String mText;
+    private String mText;
 
-  // animation support
-  boolean newPosition = true;
-  int old_x;
-  int old_y;
+    // animation support
+    boolean newPosition = true;
+    int old_x;
+    int old_y;
 
-  public TagButton(Context context) {
-    super(context);
-    init();
-  }
+    public TagButton(Context context) {
+        super(context);
+        init(context, null);
+    }
 
-  public TagButton(Context context, AttributeSet attrs) {
-    super(context, attrs);
-    init();
-  }
+    public TagButton(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context, attrs);
+    }
 
-  public TagButton(Context context, AttributeSet attrs, int defStyle) {
-    super(context, attrs, defStyle);
-    init();
-  }
+    public TagButton(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        init(context, attrs);
+    }
 
-  /**
-   * Sharable code between constructors
-   */
-  private void init() {
-    // TODO set it as default in theme
-    setBackgroundResource(R.drawable.tag);
-    setTextColor(0xFFFFFFFF);
+    /**
+     * Sharable code between constructors
+     * 
+     * @param attrs
+     * @param context
+     */
+    private void init(Context context, AttributeSet attrs) {
 
-    mText = "";
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TagTheme);
+        int background = a.getResourceId(R.styleable.TagTheme_tagDrawable, R.drawable.tag_default);
+        setBackgroundResource(background);
 
-    this.setFocusable(true);
-    this.setOnFocusChangeListener(new OnFocusChangeListener() {
+        setTextColor(0xFFFFFFFF);
 
-      public void onFocusChange(View v, boolean hasFocus) {
-        System.out.print("Focus changed!");
-        if (v == TagButton.this && hasFocus) {
-          System.out.print("Tag got focused!");
+        mText = "";
+
+        this.setFocusable(true);
+        this.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+            public void onFocusChange(View v, boolean hasFocus) {
+                System.out.print("Focus changed!");
+                if (v == TagButton.this && hasFocus) {
+                    System.out.print("Tag got focused!");
+                }
+            }
+
+        });
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        Log.i(TAG, mText + ": dx = " + left + " dy = " + top);
+        if (newPosition) {
+            old_x = left;
+            old_y = top;
+            newPosition = false;
         }
-      }
 
-    });
-  }
-
-  @Override
-  protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-    Log.i(TAG, mText + ": dx = " + left + " dy = " + top);
-    if (newPosition) {
-      old_x = left;
-      old_y = top;
-      newPosition = false;
+        super.onLayout(changed, left, top, right, bottom);
     }
 
-    super.onLayout(changed, left, top, right, bottom);
-  }
-
-  public void setText(String text) {
-    mText = text;
-    super.setText(mText);
-  }
-
-  /**
-   * Generates translate animation on position change, must be executed from
-   * parent within onLayout method
-   * 
-   * @param durationMillis
-   * @return
-   */
-  public Animation createTranslateAnimation(long durationMillis) {
-    if (old_x == getLeft() && old_y == getTop()) {
-      return null;
+    public void setText(String text) {
+        mText = text;
+        super.setText(mText);
     }
 
-    int dx = getLeft() - old_x;
-    int dy = getTop() - old_y;
-    Animation a = new TranslateAnimation(-dx, 0, -dy, 0);
-    a.setFillAfter(true);
-    a.setDuration(durationMillis);
+    /**
+     * Generates translate animation on position change, must be executed from
+     * parent within onLayout method
+     * 
+     * @param durationMillis
+     * @return
+     */
+    public Animation createTranslateAnimation(long durationMillis) {
+        if (old_x == getLeft() && old_y == getTop()) {
+            return null;
+        }
 
-    old_x = getLeft();
-    old_y = getTop();
+        int dx = getLeft() - old_x;
+        int dy = getTop() - old_y;
+        Animation a = new TranslateAnimation(-dx, 0, -dy, 0);
+        a.setFillAfter(true);
+        a.setDuration(durationMillis);
 
-    return a;
-  }
+        old_x = getLeft();
+        old_y = getTop();
+
+        return a;
+    }
 
 }
