@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <declare-styleable name="TagTheme">
-  <attr
-      name="tagsBackground"
-      format="reference" />
-  <attr
-      name="tagDrawable"
-      format="reference" />
-  </declare-styleable>
+
+    <declare-styleable name="TagTheme">
+        <attr format="reference" name="tagsBackground" />
+        <attr format="reference" name="tagDrawable" />
+        <attr format="reference" name="tagListItem" />
+    </declare-styleable>
+
 </resources>

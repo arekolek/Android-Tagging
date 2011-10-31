@@ -68,7 +68,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="#ffffff"
-        android:divider="#d9d7d7" >
+        android:divider="#d9d7d7"
+        android:dividerHeight="1px" >
     </ListView>
 
     <include

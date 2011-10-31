@@ -27,6 +27,7 @@ import com.applicake.android.widget.TagLayout;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -248,7 +249,7 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
     mTags.add(tag);
     mTagLayout.addTag(tag);
     if (!mPickOnly)
-    mTagEditText.setText("");
+      mTagEditText.setText("");
 
     return true;
   }
@@ -268,7 +269,7 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     if (!animate) {
       String tag = (String) parent.getItemAtPosition(position);
-      View label = view.findViewById(R.id.row_label);
+      View label = view.findViewById(android.R.id.text1);
       if (mTags.contains(tag)) {
         removeTag(tag);
         label.startAnimation(mFadeInAnimation);
@@ -284,10 +285,13 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
 
     private List<String> mList;
     private Activity mContext;
+    private int mItem;
 
     public TagListAdapter(Activity context, List<String> tags) {
       mContext = context;
       mList = tags;
+      TypedArray a = getTheme().obtainStyledAttributes(R.styleable.TagTheme);
+      mItem = a.getResourceId(R.styleable.TagTheme_tagListItem, R.layout.tag_row);
     }
 
     @Override
@@ -299,10 +303,10 @@ public class TaggingActivity extends Activity implements OnItemClickListener {
       // FIXME caching doesn't work right
       //      if (row == null) {
       LayoutInflater inflater = mContext.getLayoutInflater();
-      row = inflater.inflate(R.layout.tag_row, null);
+      row = inflater.inflate(mItem, parent, false);
 
       holder = new ViewHolder();
-      holder.label = (TextView) row.findViewById(R.id.row_label);
+      holder.label = (TextView) row.findViewById(android.R.id.text1);
 
       row.setTag(holder);
       //      } else {
