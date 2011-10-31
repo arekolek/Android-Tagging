@@ -23,7 +23,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/tab_bar_rest"
-        android:gravity="center_vertical" >
+        android:gravity="center_vertical"
+        android:padding="4dp" >
 
         <!-- TODO make tab_bar_rest themeable/styleable -->
 
@@ -36,11 +37,10 @@
             android:layout_marginTop="2dip"
             android:layout_weight="1"
             android:ellipsize="end"
+            android:hint="@string/tag_hint"
             android:nextFocusDown="@+id/tag_add_button"
             android:singleLine="true"
             android:textSize="18sp" />
-        <!-- android:hint="@string/tag_hint" -->
-        <!-- TODO what about tag_add? -->
 
         <Button
             android:id="@+id/tag_add_button"
